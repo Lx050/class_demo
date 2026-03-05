@@ -3,3 +3,4 @@ Five class assignments
 
 ## ex01
 HelloWorld program - prints "Hello, World!" to the console.
+Added keyboard input feature using `input()` function to read and display user input.
