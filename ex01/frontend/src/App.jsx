@@ -8,14 +8,17 @@ function App() {
   const [userInput, setUserInput] = useState('')
   const [echoResult, setEchoResult] = useState('')
   const [loading, setLoading] = useState(false)
+  const [mode, setMode] = useState('detecting')
 
   const fetchHello = async () => {
     try {
       const res = await fetch(`${API_BASE}/hello`)
       const data = await res.json()
       setHelloMessage(data.message)
+      setMode('api')
     } catch {
-      setHelloMessage('Error: Cannot connect to backend')
+      setHelloMessage('Hello, World!')
+      setMode('local')
     }
   }
 
@@ -31,7 +34,7 @@ function App() {
       const data = await res.json()
       setEchoResult(data.echo)
     } catch {
-      setEchoResult('Error: Cannot connect to backend')
+      setEchoResult('You entered: ' + userInput)
     } finally {
       setLoading(false)
     }
@@ -46,6 +49,11 @@ function App() {
       <header className="header">
         <h1>Ex01 - HelloWorld</h1>
         <p className="subtitle">Java Spring Boot + React</p>
+        {mode !== 'detecting' && (
+          <span className={`badge ${mode}`}>
+            {mode === 'api' ? 'API Connected' : 'Standalone Mode'}
+          </span>
+        )}
       </header>
 
       <main className="main">
