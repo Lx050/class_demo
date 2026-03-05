@@ -30,6 +30,7 @@
 - [API Documentation](#api-documentation)
 - [Architecture](#architecture)
 - [CI/CD Pipeline](#cicd-pipeline)
+  - [Issue Auto-resolve](#issue-auto-resolve)
 - [Git Workflow](#git-workflow)
 - [Changelog](#changelog)
 - [License](#license)
@@ -77,6 +78,11 @@ This repository contains a series of full-stack web application exercises design
 class_demo/
 ├── LICENSE
 ├── README.md
+├── scripts/
+│   └── resolve-issue.sh              # Issue auto-resolve logic
+├── .github/workflows/
+│   ├── deploy.yml                    # CI/CD: build & deploy to GitHub Pages
+│   └── auto-resolve-issue.yml        # Issue auto-resolve & auto-merge
 └── ex01/
     ├── backend/                          # Spring Boot REST API
     │   ├── pom.xml                       # Maven configuration
@@ -271,6 +277,38 @@ develop ──► PR ──► main ──► GitHub Actions ──► GitHub Pa
 
 Workflow configuration: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
 
+### Issue Auto-resolve
+
+Issues are automatically analyzed and resolved via GitHub Actions:
+
+```
+Issue opened ──► GitHub Actions ──► Analyze ──► Create branch
+                                                    │
+                      Auto-merge ◄── PR ◄── Commit & Push
+```
+
+| Step | Action | Description |
+|------|--------|-------------|
+| 1 | Trigger | New Issue is opened |
+| 2 | Analyze | `scripts/resolve-issue.sh` parses issue title & body |
+| 3 | Fix | Applies matched pattern (update readme, fix bug, etc.) |
+| 4 | PR | Creates `fix/issue-{N}` branch and pull request |
+| 5 | Merge | Auto-merge via squash after CI passes |
+
+**Supported Issue Patterns:**
+
+| Keyword in Title | Action |
+|------------------|--------|
+| `update readme` / `update docs` | Appends content to README.md |
+| `update footer` | Modifies footer text in App.jsx |
+| `change title` / `change heading` | Updates page heading |
+| `update style` / `change color` | Modifies CSS theme colors (put hex in body) |
+| `add feature` | Inserts new feature card component |
+| `fix bug` | Applies fix to file mentioned in body |
+
+Workflow configuration: [`.github/workflows/auto-resolve-issue.yml`](.github/workflows/auto-resolve-issue.yml)
+Resolve script: [`scripts/resolve-issue.sh`](scripts/resolve-issue.sh)
+
 ## Git Workflow
 
 This project follows the **Feature Branch Workflow** with pull request reviews:
@@ -292,6 +330,7 @@ main
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v2.2 | 2026-03-05 | Added Issue auto-resolve workflow with auto-merge |
 | v2.1 | 2026-03-05 | Added GitHub Actions CI/CD, auto-deploy to GitHub Pages |
 | v2.0 | 2026-03-05 | Migrated to Java Spring Boot + React full-stack architecture |
 | v1.1 | 2026-03-05 | Added keyboard input/output feature (Python) |
