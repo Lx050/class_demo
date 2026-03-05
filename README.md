@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Lx050/class_demo)
-![GitHub branches](https://img.shields.io/github/branches/Lx050/class_demo)
+![GitHub repo size](https://img.shields.io/github/repo-size/Lx050/class_demo)
 
 **A collection of Python programming exercises for classroom assignments.**
 
