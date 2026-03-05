@@ -7,8 +7,11 @@
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Lx050/class_demo)
+![Deploy](https://img.shields.io/github/actions/workflow/status/Lx050/class_demo/deploy.yml?label=Deploy&logo=githubactions&logoColor=white)
 
 **A full-stack web application exercise built with Java Spring Boot and React.**
+
+[**Live Demo**](https://lx050.github.io/class_demo/) | [**Source Code**](https://github.com/Lx050/class_demo)
 
 </div>
 
@@ -16,6 +19,7 @@
 
 ## Table of Contents
 
+- [Live Demo](#live-demo)
 - [Overview](#overview)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
@@ -25,9 +29,23 @@
 - [Quick Start](#quick-start)
 - [API Documentation](#api-documentation)
 - [Architecture](#architecture)
+- [CI/CD Pipeline](#cicd-pipeline)
 - [Git Workflow](#git-workflow)
 - [Changelog](#changelog)
 - [License](#license)
+
+## Live Demo
+
+The React frontend is automatically deployed to GitHub Pages via CI/CD:
+
+**https://lx050.github.io/class_demo/**
+
+> The demo runs in **Standalone Mode** (frontend-only). To experience the full-stack version with Spring Boot backend, follow the [Quick Start](#quick-start) guide for local development.
+
+| Mode | Environment | Backend | Description |
+|------|-------------|---------|-------------|
+| Standalone | GitHub Pages | N/A | Frontend runs independently with local fallback |
+| Full-Stack | Local Dev | Spring Boot | Frontend communicates with backend REST API |
 
 ## Overview
 
@@ -234,6 +252,25 @@ Echoes back the user input.
    └───────────┘                      └────────────────┘
 ```
 
+## CI/CD Pipeline
+
+This project uses **GitHub Actions** for continuous integration and deployment:
+
+```
+develop ──► PR ──► main ──► GitHub Actions ──► GitHub Pages
+                     │
+                     ├── npm ci          (Install dependencies)
+                     ├── npm run build   (Build React app)
+                     └── deploy-pages    (Deploy to GitHub Pages)
+```
+
+| Trigger | Jobs | Description |
+|---------|------|-------------|
+| PR to `main` | Build | Validate that the React app builds successfully |
+| Push to `main` | Build + Deploy | Build and deploy to GitHub Pages |
+
+Workflow configuration: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
+
 ## Git Workflow
 
 This project follows the **Feature Branch Workflow** with pull request reviews:
@@ -255,6 +292,7 @@ main
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v2.1 | 2026-03-05 | Added GitHub Actions CI/CD, auto-deploy to GitHub Pages |
 | v2.0 | 2026-03-05 | Migrated to Java Spring Boot + React full-stack architecture |
 | v1.1 | 2026-03-05 | Added keyboard input/output feature (Python) |
 | v1.0 | 2026-03-05 | Initial HelloWorld program (Python) |
