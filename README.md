@@ -297,14 +297,14 @@ Issue opened ──► GitHub Actions ──► Analyze ──► Create branch
 
 **Supported Issue Patterns:**
 
-| Keyword in Title | Action |
-|------------------|--------|
-| `update readme` / `update docs` | Appends content to README.md |
-| `update footer` | Modifies footer text in App.jsx |
-| `change title` / `change heading` | Updates page heading |
-| `update style` / `change color` | Modifies CSS theme colors (put hex in body) |
-| `add feature` | Inserts new feature card component |
-| `fix bug` | Applies fix to file mentioned in body |
+| Keyword (EN / CN) | Action |
+|-------------------|--------|
+| `update readme` / `修改文档` | Appends content to README.md |
+| `update footer` / `修改页脚` | Modifies footer text in App.jsx |
+| `change title` / `修改标题` | Updates page heading |
+| `update style` / `颜色` / `样式` / `不好看` | Modifies CSS theme colors (hex in body or auto) |
+| `add feature` / `添加功能` | Inserts new feature card component |
+| `fix bug` / `修复` / `错误` | Applies fix to file mentioned in body |
 
 Workflow configuration: [`.github/workflows/auto-resolve-issue.yml`](.github/workflows/auto-resolve-issue.yml)
 Resolve script: [`scripts/resolve-issue.sh`](scripts/resolve-issue.sh)
