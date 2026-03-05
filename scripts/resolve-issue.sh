@@ -22,7 +22,10 @@
 #                  ai_resolve() function.
 # =============================================================================
 
-set -euo pipefail
+set -eo pipefail
+
+# Ensure ISSUE_BODY has a default value (may be empty for issues without a body)
+ISSUE_BODY="${ISSUE_BODY:-}"
 
 echo "=========================================="
 echo "Auto-resolve Issue #${ISSUE_NUMBER}"
@@ -100,7 +103,7 @@ if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(style|color|theme|cs
     FRONTEND_CSS="ex01/frontend/src/App.css"
     if [ -f "$FRONTEND_CSS" ]; then
         # If body contains a hex color, use it
-        HEX_COLOR=$(echo "$ISSUE_BODY" | grep -oE '#[0-9a-fA-F]{6}' | head -1)
+        HEX_COLOR=$(echo "$ISSUE_BODY" | grep -oE '#[0-9a-fA-F]{6}' | head -1 || true)
         if [ -n "$HEX_COLOR" ]; then
             sed -i "s/#667eea/${HEX_COLOR}/g" "$FRONTEND_CSS"
             CHANGED=true
@@ -152,7 +155,7 @@ if echo "$TITLE_LOWER" | grep -qE "(fix|bug|error|broken|issue)" || \
     echo "[MATCH] Attempting bug fix..."
 
     # Check if the issue body mentions specific files
-    MENTIONED_FILE=$(echo "$ISSUE_BODY" | grep -oE '[a-zA-Z0-9_/]+\.(jsx?|tsx?|css|java|py)' | head -1)
+    MENTIONED_FILE=$(echo "$ISSUE_BODY" | grep -oE '[a-zA-Z0-9_/]+\.(jsx?|tsx?|css|java|py)' | head -1 || true)
     if [ -n "$MENTIONED_FILE" ] && [ -f "$MENTIONED_FILE" ]; then
         echo "  File mentioned: $MENTIONED_FILE"
         # Add a fix comment marker (placeholder for AI integration)
