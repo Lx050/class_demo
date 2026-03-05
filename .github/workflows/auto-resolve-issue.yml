@@ -1,0 +1,103 @@
+name: Auto Resolve Issue
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create fix branch
+        run: |
+          BRANCH_NAME="fix/issue-${{ github.event.issue.number }}"
+          git checkout -b "$BRANCH_NAME"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Run resolve script
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          chmod +x scripts/resolve-issue.sh
+          bash scripts/resolve-issue.sh
+
+      - name: Check for changes
+        id: check
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.check.outputs.has_changes == 'true'
+        run: |
+          git add -A
+          git commit -m "fix: auto-resolve issue #${{ github.event.issue.number }} - ${{ github.event.issue.title }}"
+          git push origin "$BRANCH_NAME"
+
+      - name: Create Pull Request
+        if: steps.check.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_URL=$(gh pr create \
+            --title "fix: ${{ github.event.issue.title }}" \
+            --body "$(cat <<'PREOF'
+          ## Auto-resolved Issue
+
+          Automatically generated fix for #${{ github.event.issue.number }}
+
+          ### Issue
+          **${{ github.event.issue.title }}**
+
+          ### Changes
+          See commit diff for details.
+
+          Fixes #${{ github.event.issue.number }}
+          PREOF
+          )" \
+            --base main \
+            --head "$BRANCH_NAME")
+
+          echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+
+          # Enable auto-merge
+          PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+          gh pr merge "$PR_NUMBER" --auto --squash --delete-branch
+
+      - name: Comment on issue
+        if: steps.check.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --body "A fix has been automatically generated and submitted as a pull request: ${{ env.PR_URL }}
+
+          The PR will be auto-merged once CI checks pass."
+
+      - name: Comment if no changes
+        if: steps.check.outputs.has_changes == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --body "The auto-resolve workflow was triggered but could not generate a fix for this issue. Manual review is required."
