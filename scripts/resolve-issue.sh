@@ -9,13 +9,13 @@
 #   ISSUE_TITLE   - Issue title
 #   ISSUE_BODY    - Issue body/description
 #
-# Supported patterns:
-#   - "update readme"    -> Updates README.md
-#   - "update footer"    -> Updates footer text in App.jsx
-#   - "change title"     -> Updates page title in App.jsx
-#   - "add feature"      -> Adds placeholder feature
-#   - "fix bug"          -> Applies bug fix patterns
-#   - "update style"     -> Modifies CSS styles
+# Supported patterns (English + Chinese):
+#   - "update readme" / "修改文档"         -> Updates README.md
+#   - "update footer" / "修改页脚"         -> Updates footer text in App.jsx
+#   - "change title"  / "修改标题"         -> Updates page title in App.jsx
+#   - "add feature"   / "添加功能"         -> Adds placeholder feature
+#   - "fix bug"       / "修复"             -> Applies bug fix patterns
+#   - "update style"  / "颜色/样式/主题"   -> Modifies CSS styles
 #
 # To extend: Add new pattern handlers in the main case block below.
 # To integrate AI: Replace pattern matching with API call in the
@@ -36,9 +36,10 @@ BODY_LOWER=$(echo "$ISSUE_BODY" | tr '[:upper:]' '[:lower:]')
 CHANGED=false
 
 # ---------------------------------------------------------------------------
-# Pattern: Update README
+# Pattern: Update README (EN + CN)
 # ---------------------------------------------------------------------------
-if echo "$TITLE_LOWER" | grep -qE "(update|modify|change|edit).*(readme|documentation|docs)"; then
+if echo "$TITLE_LOWER" | grep -qE "(update|modify|change|edit).*(readme|documentation|docs)" || \
+   echo "$ISSUE_TITLE" | grep -qE "(修改|更新|编辑).*(文档|readme|说明)"; then
     echo "[MATCH] Updating README.md..."
 
     # Extract the requested change from issue body
@@ -54,9 +55,10 @@ EOF
 fi
 
 # ---------------------------------------------------------------------------
-# Pattern: Update footer text
+# Pattern: Update footer text (EN + CN)
 # ---------------------------------------------------------------------------
-if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(footer|bottom)"; then
+if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(footer|bottom)" || \
+   echo "$ISSUE_TITLE" | grep -qE "(修改|更新|改).*(页脚|底部|footer)"; then
     echo "[MATCH] Updating footer text..."
 
     FRONTEND_APP="ex01/frontend/src/App.jsx"
@@ -72,9 +74,10 @@ if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(footer|bottom)"; the
 fi
 
 # ---------------------------------------------------------------------------
-# Pattern: Change page title / heading
+# Pattern: Change page title / heading (EN + CN)
 # ---------------------------------------------------------------------------
-if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(title|heading|header)"; then
+if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(title|heading|header)" || \
+   echo "$ISSUE_TITLE" | grep -qE "(修改|更新|改).*(标题|题目|heading)"; then
     echo "[MATCH] Updating page title..."
 
     FRONTEND_APP="ex01/frontend/src/App.jsx"
@@ -88,26 +91,42 @@ if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(title|heading|header
 fi
 
 # ---------------------------------------------------------------------------
-# Pattern: Update styles / colors
+# Pattern: Update styles / colors (EN + CN)
 # ---------------------------------------------------------------------------
-if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(style|color|theme|css)"; then
+if echo "$TITLE_LOWER" | grep -qE "(update|modify|change).*(style|color|theme|css)" || \
+   echo "$ISSUE_TITLE" | grep -qE "(颜色|样式|主题|配色|色彩|好看|难看|不好看|美化|优化.*样式)"; then
     echo "[MATCH] Updating styles..."
 
     FRONTEND_CSS="ex01/frontend/src/App.css"
     if [ -f "$FRONTEND_CSS" ]; then
-        # If body contains a hex color, update the gradient
+        # If body contains a hex color, use it
         HEX_COLOR=$(echo "$ISSUE_BODY" | grep -oE '#[0-9a-fA-F]{6}' | head -1)
         if [ -n "$HEX_COLOR" ]; then
             sed -i "s/#667eea/${HEX_COLOR}/g" "$FRONTEND_CSS"
+            CHANGED=true
+        else
+            # No hex color specified, apply an improved color scheme
+            echo "  No hex color in body, applying improved color scheme..."
+            # Primary gradient: warm coral to purple
+            sed -i 's/#667eea/#f093fb/g' "$FRONTEND_CSS"
+            sed -i 's/#764ba2/#f5576c/g' "$FRONTEND_CSS"
+            # Card background: softer dark
+            sed -i 's/#1e1e2e/#1a1b2e/g' "$FRONTEND_CSS"
+            sed -i 's/#2d2d3f/#2a2b4a/g' "$FRONTEND_CSS"
+            # Input background
+            sed -i 's/#16161e/#151623/g' "$FRONTEND_CSS"
+            # Result text: warm green
+            sed -i 's/#a8d8a8/#7dd3a8/g' "$FRONTEND_CSS"
             CHANGED=true
         fi
     fi
 fi
 
 # ---------------------------------------------------------------------------
-# Pattern: Add new feature / component
+# Pattern: Add new feature / component (EN + CN)
 # ---------------------------------------------------------------------------
-if echo "$TITLE_LOWER" | grep -qE "(add|create|new).*(feature|function|component)"; then
+if echo "$TITLE_LOWER" | grep -qE "(add|create|new).*(feature|function|component)" || \
+   echo "$ISSUE_TITLE" | grep -qE "(添加|新增|增加|创建).*(功能|组件|特性|模块)"; then
     echo "[MATCH] Adding new feature placeholder..."
 
     FRONTEND_APP="ex01/frontend/src/App.jsx"
@@ -126,9 +145,10 @@ if echo "$TITLE_LOWER" | grep -qE "(add|create|new).*(feature|function|component
 fi
 
 # ---------------------------------------------------------------------------
-# Pattern: Fix bug
+# Pattern: Fix bug (EN + CN)
 # ---------------------------------------------------------------------------
-if echo "$TITLE_LOWER" | grep -qE "(fix|bug|error|broken|issue)"; then
+if echo "$TITLE_LOWER" | grep -qE "(fix|bug|error|broken|issue)" || \
+   echo "$ISSUE_TITLE" | grep -qE "(修复|修正|bug|错误|问题|崩溃|异常)"; then
     echo "[MATCH] Attempting bug fix..."
 
     # Check if the issue body mentions specific files
