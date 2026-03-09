@@ -121,12 +121,22 @@ class_demo/
 
 #### Python Command-Line Version
 
-**`hello.py`** - A simple Python script demonstrating `print()` output and `input()` keyboard input:
+**`hello.py`** - A Python script demonstrating `print()` 输出和 `input()` 键盘输入功能:
+
+| 功能 | 说明 | 使用的函数 |
+|------|------|-----------|
+| 输出 Hello World | 在终端打印欢迎信息 | `print()` |
+| 键盘输入姓名 | 读取用户输入的姓名并显示 | `input()` |
+| 键盘输入年龄 | 读取用户输入的年龄并显示 | `input()` |
+| 键盘输入任意内容 | 读取用户输入的文本并回显 | `input()` |
 
 ```python
 # 使用 input 函数实现键盘输入
 name = input("请输入你的名字: ")
 print(f"你好, {name}! 欢迎学习 Python 编程！")
+
+age = input("请输入你的年龄: ")
+print(f"{name}, 你今年 {age} 岁。")
 
 message = input("请输入一段话: ")
 print(f"你输入的内容是: {message}")
