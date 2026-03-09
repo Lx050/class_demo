@@ -110,7 +110,7 @@ class_demo/
 
 ### ex01 - HelloWorld Web App
 
-> **Objective:** Build a full-stack HelloWorld web application with user input functionality using Java Spring Boot as the backend API and React as the frontend UI.
+> **Objective:** Build a full-stack HelloWorld web application with user input functionality using Java Spring Boot as the backend API and React as the frontend UI. Also includes a Python command-line version demonstrating basic I/O operations.
 
 #### Features
 
@@ -118,6 +118,25 @@ class_demo/
 |---------|-------------|-------------|
 | Hello World | Fetch a greeting message from the backend | `GET /api/hello` |
 | Keyboard Input | Submit user input and display the echoed response | `POST /api/echo` |
+
+#### Python Command-Line Version
+
+**`hello.py`** - A simple Python script demonstrating `print()` output and `input()` keyboard input:
+
+```python
+# 使用 input 函数实现键盘输入
+name = input("请输入你的名字: ")
+print(f"你好, {name}! 欢迎学习 Python 编程！")
+
+message = input("请输入一段话: ")
+print(f"你输入的内容是: {message}")
+```
+
+Run with:
+```bash
+cd ex01
+python hello.py
+```
 
 #### Backend - Key Code
 
