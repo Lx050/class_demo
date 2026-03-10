@@ -1,188 +1,437 @@
+/* ============================================================
+ * 中国传统色配色方案 - Chinese Traditional Color Palette
+ *
+ * 石青 #1685a9   - 主色调 (按钮、链接、强调)
+ * 靛青 #177cb0   - 主色调悬停
+ * 花青 #003472   - 深色强调
+ * 胭脂 #c45a65   - 错误 / 危险
+ * 松柏绿 #21a675 - 成功
+ * 赤金 #d4a017   - 警告 / 高亮
+ * 墨色 #50616d   - 次要文字
+ * 缟   #f2ecde   - 卡片背景
+ * 象牙白 #faf8f2 - 页面背景
+ * 鸦青 #424c50   - 主要文字
+ * ============================================================ */
+
+/* ---------- 全局变量 ---------- */
+:root {
+  --stone-blue: #1685a9;
+  --indigo: #177cb0;
+  --deep-blue: #003472;
+  --rouge: #c45a65;
+  --pine-green: #21a675;
+  --gold: #d4a017;
+  --ink: #50616d;
+  --silk-white: #f2ecde;
+  --ivory: #faf8f2;
+  --crow-green: #424c50;
+  --border-color: #e0d8cb;
+  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ---------- 页面布局 ---------- */
 .app {
-  max-width: 720px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 1.5rem;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.header h1 {
-  font-size: 2.4rem;
-  margin-bottom: 0.25rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.subtitle {
-  color: #888;
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.2em 0.75em;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-}
-
-.badge.api {
-  background: rgba(102, 126, 234, 0.15);
-  color: #667eea;
-  border: 1px solid rgba(102, 126, 234, 0.3);
-}
-
-.badge.local {
-  background: rgba(234, 179, 8, 0.15);
-  color: #eab308;
-  border: 1px solid rgba(234, 179, 8, 0.3);
-}
-
-.main {
+/* ============================================================
+ * 导航栏 - Navigation Bar
+ * ============================================================ */
+.nav {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.nav-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--deep-blue);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  color: var(--ink);
+  font-size: 0.9rem;
+  padding: 0.4em 0.85em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+  background: rgba(22, 133, 169, 0.08);
+  color: var(--stone-blue);
+}
+
+.nav-link.active {
+  background: rgba(22, 133, 169, 0.12);
+  color: var(--stone-blue);
+  font-weight: 600;
+}
+
+.nav-link.logout {
+  color: var(--rouge);
+}
+
+.nav-link.logout:hover {
+  background: rgba(196, 90, 101, 0.08);
+}
+
+.nav-user {
+  font-size: 0.85rem;
+  color: var(--stone-blue);
+  font-weight: 500;
+  padding: 0.3em 0.7em;
+  background: rgba(22, 133, 169, 0.08);
+  border-radius: 6px;
+}
+
+/* ============================================================
+ * 全局提示消息 - Message Banner
+ * ============================================================ */
+.message {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.message.success {
+  background: rgba(33, 166, 117, 0.1);
+  color: var(--pine-green);
+  border: 1px solid rgba(33, 166, 117, 0.25);
+}
+
+.message.error {
+  background: rgba(196, 90, 101, 0.1);
+  color: var(--rouge);
+  border: 1px solid rgba(196, 90, 101, 0.25);
+}
+
+/* ============================================================
+ * 主内容区域 - Main Content
+ * ============================================================ */
+.main {
   flex: 1;
 }
 
-.card {
-  background: #1e1e2e;
-  border: 1px solid #2d2d3f;
-  border-radius: 12px;
-  padding: 1.75rem;
-  transition: border-color 0.3s;
+/* ---------- 首页 ---------- */
+.page-home {
+  text-align: center;
 }
 
-.card:hover {
-  border-color: #667eea;
+.home-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--deep-blue);
+  margin: 1.5rem 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.home-subtitle {
+  font-size: 1.05rem;
+  color: var(--stone-blue);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.home-desc {
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  max-width: 520px;
+  margin: 0 auto 2rem;
+}
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--silk-white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.75rem;
+  text-align: left;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 2rem;
 }
 
 .card h2 {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
+  color: var(--crow-green);
   margin: 0 0 0.5rem;
-  color: #e0e0e0;
 }
 
-.description {
-  color: #999;
-  font-size: 0.875rem;
-  margin-bottom: 1.25rem;
+.card-desc {
+  color: var(--ink);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
 }
 
+/* ---------- 按钮 ---------- */
 .btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 0.6em 1.5em;
+  padding: 0.6em 1.4em;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s, transform 0.1s;
 }
 
-.btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
 .btn:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
+.btn-primary {
+  background: var(--stone-blue);
+  color: #fff;
 }
 
-.input-group {
-  display: flex;
-  gap: 0.75rem;
+.btn-primary:hover {
+  background: var(--indigo);
 }
 
-.input {
-  flex: 1;
-  padding: 0.6em 1em;
-  border-radius: 8px;
-  border: 1px solid #2d2d3f;
-  background: #16161e;
-  color: #e0e0e0;
-  font-size: 0.9rem;
-  outline: none;
-  transition: border-color 0.3s;
+.btn-full {
+  width: 100%;
+  padding: 0.75em;
+  font-size: 0.95rem;
 }
 
-.input:focus {
-  border-color: #667eea;
-}
-
-.input::placeholder {
-  color: #555;
-}
-
+/* ---------- 结果显示 ---------- */
 .result {
   margin-top: 1rem;
   padding: 0.85rem 1rem;
-  background: #16161e;
-  border-left: 3px solid #667eea;
+  background: #fff;
+  border-left: 3px solid var(--stone-blue);
   border-radius: 0 8px 8px 0;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 0.9rem;
-  color: #a8d8a8;
+  color: var(--crow-green);
 }
 
+.result-label {
+  color: var(--ink);
+  font-size: 0.8rem;
+  margin-right: 0.5em;
+}
+
+/* ---------- 徽章 ---------- */
+.badge {
+  display: inline-block;
+  padding: 0.2em 0.65em;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+.badge.api {
+  background: rgba(33, 166, 117, 0.12);
+  color: var(--pine-green);
+  border: 1px solid rgba(33, 166, 117, 0.3);
+}
+
+.badge.local {
+  background: rgba(212, 160, 23, 0.12);
+  color: var(--gold);
+  border: 1px solid rgba(212, 160, 23, 0.3);
+}
+
+/* ---------- 功能展示卡片组 ---------- */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.feature-item {
+  background: var(--silk-white);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.feature-item:hover {
+  border-color: var(--stone-blue);
+  box-shadow: 0 2px 12px rgba(22, 133, 169, 0.1);
+}
+
+.feature-item h3 {
+  font-size: 0.95rem;
+  color: var(--crow-green);
+  margin: 0.75rem 0 0.35rem;
+}
+
+.feature-item p {
+  font-size: 0.8rem;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ---------- 功能图标 ---------- */
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.icon-register {
+  background: var(--stone-blue);
+}
+
+.icon-login {
+  background: var(--pine-green);
+}
+
+.icon-validate {
+  background: var(--gold);
+}
+
+/* ============================================================
+ * 注册 / 登录页 - Auth Pages
+ * ============================================================ */
+.page-auth {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--silk-white);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+}
+
+.auth-card h2 {
+  text-align: center;
+  font-size: 1.35rem;
+  color: var(--deep-blue);
+  margin: 0 0 0.35rem;
+}
+
+.auth-desc {
+  text-align: center;
+  color: var(--ink);
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ---------- 表单控件 ---------- */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--crow-green);
+  margin-bottom: 0.35rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.65em 0.85em;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: #fff;
+  color: var(--crow-green);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: var(--stone-blue);
+  box-shadow: 0 0 0 3px rgba(22, 133, 169, 0.1);
+}
+
+.form-input::placeholder {
+  color: #aaa;
+}
+
+/* ---------- 页面切换链接 ---------- */
+.auth-switch {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink);
+  margin-top: 1.25rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--stone-blue);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-left: 0.25em;
+}
+
+.link-btn:hover {
+  color: var(--deep-blue);
+}
+
+/* ============================================================
+ * 底部栏 - Footer
+ * ============================================================ */
 .footer {
   text-align: center;
   margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #2d2d3f;
-  color: #555;
-  font-size: 0.8rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border-color);
+  color: var(--ink);
+  font-size: 0.78rem;
 }
 
-@media (prefers-color-scheme: light) {
-  .card {
-    background: #ffffff;
-    border-color: #e0e0e0;
+/* ============================================================
+ * 响应式适配 - Responsive
+ * ============================================================ */
+@media (max-width: 600px) {
+  .features {
+    grid-template-columns: 1fr;
   }
 
-  .card:hover {
-    border-color: #667eea;
+  .home-title {
+    font-size: 1.8rem;
   }
 
-  .card h2 {
-    color: #333;
-  }
-
-  .description {
-    color: #666;
-  }
-
-  .input {
-    background: #f5f5f5;
-    border-color: #ddd;
-    color: #333;
-  }
-
-  .result {
-    background: #f0f7f0;
-    color: #2d6a2d;
-  }
-
-  .footer {
-    border-color: #e0e0e0;
-    color: #999;
+  .auth-card {
+    padding: 1.5rem;
   }
 }
