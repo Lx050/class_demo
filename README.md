@@ -108,41 +108,49 @@ class_demo/
 
 ## Exercises
 
-### ex01 - HelloWorld Web App
+### ex01 - 用户注册登录系统
 
-> **Objective:** Build a full-stack HelloWorld web application with user input functionality using Java Spring Boot as the backend API and React as the frontend UI. Also includes a Python command-line version demonstrating basic I/O operations.
+> **Objective:** 构建一个包含用户注册、登录和密码校验功能的全栈 Web 应用。使用 Java Spring Boot 作为后端 API，React 作为前端 UI，同时提供 Python 命令行版本演示 `input()` 键盘输入。
 
 #### Features
 
-| Feature | Description | API Endpoint |
-|---------|-------------|-------------|
-| Hello World | Fetch a greeting message from the backend | `GET /api/hello` |
-| Keyboard Input | Submit user input and display the echoed response | `POST /api/echo` |
+| 功能 | 说明 | API 接口 |
+|------|------|---------|
+| Hello World 首页 | 欢迎页面 + 后端 API 连接测试 | `GET /api/hello` |
+| 用户注册 | 输入用户名、密码、确认密码完成注册 | `POST /api/auth/register` |
+| 用户登录 | 输入用户名和密码验证身份 | `POST /api/auth/login` |
+| 密码强度校验 | 实时检查密码长度、大写字母、数字 | 前后端双重校验 |
+| 键盘输入回显 | 提交文本并从后端返回 | `POST /api/echo` |
 
-#### Python Command-Line Version
+#### Python 命令行版本
 
-**`hello.py`** - A Python script demonstrating `print()` 输出和 `input()` 键盘输入功能:
+**`hello.py`** - 使用 `input()` 函数实现键盘输入的注册登录系统：
 
 | 功能 | 说明 | 使用的函数 |
 |------|------|-----------|
-| 输出 Hello World | 在终端打印欢迎信息 | `print()` |
-| 键盘输入姓名 | 读取用户输入的姓名并显示 | `input()` |
-| 键盘输入年龄 | 读取用户输入的年龄并显示 | `input()` |
-| 键盘输入任意内容 | 读取用户输入的文本并回显 | `input()` |
+| Hello World 输出 | 打印欢迎信息 | `print()` |
+| 菜单选择 | 读取用户选择的操作 | `input()` |
+| 用户注册 | 输入用户名、密码、确认密码 | `input()` |
+| 密码强度校验 | 检查长度、大写字母、数字 | `validate_password()` |
+| 用户登录 | 输入用户名和密码验证身份 | `input()` |
 
 ```python
-# 使用 input 函数实现键盘输入
-name = input("请输入你的名字: ")
-print(f"你好, {name}! 欢迎学习 Python 编程！")
+# 密码强度校验
+def validate_password(password):
+    errors = []
+    if len(password) < 6:
+        errors.append("长度至少6位")
+    if not any(c.isupper() for c in password):
+        errors.append("需包含至少一个大写字母")
+    if not any(c.isdigit() for c in password):
+        errors.append("需包含至少一个数字")
+    return errors
 
-age = input("请输入你的年龄: ")
-print(f"{name}, 你今年 {age} 岁。")
-
-message = input("请输入一段话: ")
-print(f"你输入的内容是: {message}")
+# 使用 input() 实现键盘输入
+username = input("请输入用户名: ")
+password = input("请输入密码: ")
 ```
 
-Run with:
 ```bash
 cd ex01
 python hello.py
@@ -150,59 +158,69 @@ python hello.py
 
 #### Backend - Key Code
 
-**`HelloController.java`** - REST API endpoints:
+**`AuthController.java`** - 用户认证 REST API：
 
 ```java
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:5173")
-public class HelloController {
+public class AuthController {
 
-    @GetMapping("/hello")
-    public Map<String, String> hello() {
-        return Map.of("message", "Hello, World!");
+    // 用户存储（HashMap 模拟数据库）
+    private final Map<String, String> userStore = new HashMap<>();
+
+    @PostMapping("/register")
+    public Map<String, Object> register(@RequestBody Map<String, String> request) {
+        String username = request.getOrDefault("username", "").trim();
+        String password = request.getOrDefault("password", "");
+        // 密码强度校验 + 用户名重复检查
+        List<String> errors = validatePassword(password);
+        if (!errors.isEmpty()) { return Map.of("success", false, "message", ...); }
+        userStore.put(username, password);
+        return Map.of("success", true, "message", "注册成功！欢迎 " + username);
     }
 
-    @PostMapping("/echo")
-    public Map<String, String> echo(@RequestBody Map<String, String> request) {
-        String input = request.getOrDefault("input", "");
-        return Map.of("echo", "You entered: " + input);
+    @PostMapping("/login")
+    public Map<String, Object> login(@RequestBody Map<String, String> request) {
+        // 验证用户名和密码是否匹配
     }
 }
 ```
 
 #### Frontend - Key Code
 
-**`App.jsx`** - React component with `fetch` API calls:
+**`App.jsx`** - React 注册登录组件（含密码实时校验）：
 
 ```jsx
-const fetchHello = async () => {
-  const res = await fetch('http://localhost:8080/api/hello')
-  const data = await res.json()
-  setHelloMessage(data.message)  // "Hello, World!"
+// 密码强度实时校验
+const validatePassword = (password) => {
+  return [
+    { label: '长度至少 6 位', passed: password.length >= 6 },
+    { label: '包含大写字母', passed: /[A-Z]/.test(password) },
+    { label: '包含数字', passed: /[0-9]/.test(password) },
+  ]
 }
 
-const submitInput = async () => {
-  const res = await fetch('http://localhost:8080/api/echo', {
+// 用户注册请求
+const handleRegister = async () => {
+  const response = await fetch(`${API_BASE}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ input: userInput }),
+    body: JSON.stringify({ username, password })
   })
-  const data = await res.json()
-  setEchoResult(data.echo)  // "You entered: ..."
 }
 ```
 
 #### Concepts Covered
 
-| Concept | Technology | Description |
-|---------|-----------|-------------|
-| REST API | Spring Boot | Define `@GetMapping` / `@PostMapping` endpoints |
-| CORS | Spring Boot | `@CrossOrigin` for cross-origin resource sharing |
-| Component State | React | `useState` hook for reactive data binding |
-| HTTP Client | React | `fetch` API for GET/POST requests |
-| Event Handling | React | `onClick` / `onChange` / `onKeyDown` handlers |
-| JSON Serialization | Both | Request/Response data exchange in JSON format |
+| 概念 | 技术 | 说明 |
+|------|------|------|
+| REST API | Spring Boot | `@PostMapping` 注册/登录接口 |
+| CORS | Spring Boot | `@CrossOrigin` 跨域资源共享 |
+| 表单输入 | React | `<input>` + `onChange` 键盘输入处理 |
+| 状态管理 | React | `useState` 管理表单数据和页面路由 |
+| 密码校验 | Both | 前端实时提示 + 后端二次校验 |
+| JSON 交互 | Both | 前后端通过 JSON 格式交换数据 |
 
 ## Quick Start
 
