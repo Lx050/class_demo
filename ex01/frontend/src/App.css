@@ -383,6 +383,30 @@
   color: #aaa;
 }
 
+/* ---------- 密码强度校验提示 ---------- */
+.password-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.rule {
+  font-size: 0.75rem;
+  padding: 0.15em 0.5em;
+  border-radius: 4px;
+}
+
+.rule.pass {
+  color: var(--pine-green);
+  background: rgba(33, 166, 117, 0.08);
+}
+
+.rule.fail {
+  color: var(--rouge);
+  background: rgba(196, 90, 101, 0.08);
+}
+
 /* ---------- 页面切换链接 ---------- */
 .auth-switch {
   text-align: center;

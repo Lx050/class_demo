@@ -5,7 +5,8 @@ HelloWorld 程序 - 用户注册登录系统 (命令行版)
   1. 输出 Hello World 欢迎信息
   2. 使用 input() 函数实现键盘输入
   3. 用户注册：输入用户名、密码、确认密码
-  4. 用户登录：输入用户名、密码进行身份验证
+  4. 密码强度校验：长度>=6、包含大写字母、包含数字
+  5. 用户登录：输入用户名、密码进行身份验证
 
 运行方式：
   cd ex01
@@ -14,6 +15,39 @@ HelloWorld 程序 - 用户注册登录系统 (命令行版)
 
 # === 用户数据存储（使用字典模拟数据库） ===
 user_database = {}
+
+
+def validate_password(password):
+    """
+    密码强度校验函数
+    检查密码是否满足以下规则：
+      1. 长度至少 6 位
+      2. 包含至少一个大写字母
+      3. 包含至少一个数字
+
+    参数:
+        password (str): 待校验的密码字符串
+
+    返回:
+        list: 未通过的校验规则描述列表，为空表示密码合格
+    """
+    errors = []
+
+    # 规则1：检查密码长度
+    if len(password) < 6:
+        errors.append("长度至少6位")
+
+    # 规则2：检查是否包含大写字母
+    has_upper = any(c.isupper() for c in password)
+    if not has_upper:
+        errors.append("需包含至少一个大写字母")
+
+    # 规则3：检查是否包含数字
+    has_digit = any(c.isdigit() for c in password)
+    if not has_digit:
+        errors.append("需包含至少一个数字")
+
+    return errors
 
 
 def register():
@@ -46,6 +80,14 @@ def register():
     # 校验两次密码是否一致
     if password != confirm_password:
         print("注册失败: 两次输入的密码不一致！")
+        return
+
+    # 校验密码强度
+    password_errors = validate_password(password)
+    if password_errors:
+        print("注册失败: 密码不符合要求:")
+        for error in password_errors:
+            print(f"  - {error}")
         return
 
     # 注册成功：将用户信息存入字典

@@ -46,6 +46,27 @@ function App() {
   const [loginPassword, setLoginPassword] = useState('')
 
   /**
+   * 密码强度校验 - Password Strength Validation
+   * 检查密码是否满足以下规则：
+   *   1. 长度至少 6 位
+   *   2. 包含至少一个大写字母
+   *   3. 包含至少一个数字
+   *
+   * @param {string} password - 待校验的密码
+   * @returns {Array} 校验规则列表，每项包含 label(规则描述) 和 passed(是否通过)
+   */
+  const validatePassword = (password) => {
+    return [
+      { label: '长度至少 6 位', passed: password.length >= 6 },
+      { label: '包含大写字母', passed: /[A-Z]/.test(password) },
+      { label: '包含数字', passed: /[0-9]/.test(password) },
+    ]
+  }
+
+  // 实时计算注册密码的校验结果
+  const passwordRules = validatePassword(registerPassword)
+
+  /**
    * 切换页面 - Navigate to a different page
    * 同时清空之前的提示消息
    * @param {string} page - 目标页面 (PAGE_HOME / PAGE_REGISTER / PAGE_LOGIN)
@@ -87,6 +108,14 @@ function App() {
     // 密码一致性检查
     if (registerPassword !== registerConfirm) {
       setMessage({ text: '两次输入的密码不一致', type: 'error' })
+      return
+    }
+
+    // 前端密码强度校验（与后端规则一致）
+    const failedRules = passwordRules.filter((rule) => !rule.passed)
+    if (failedRules.length > 0) {
+      const failedLabels = failedRules.map((r) => r.label).join('、')
+      setMessage({ text: `密码不符合要求: ${failedLabels}`, type: 'error' })
       return
     }
 
@@ -322,10 +351,23 @@ function App() {
                   id="reg-password"
                   type="password"
                   className="form-input"
-                  placeholder="请输入密码"
+                  placeholder="请输入密码（至少6位，含大写字母和数字）"
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                 />
+                {/* 密码强度实时校验提示 */}
+                {registerPassword && (
+                  <div className="password-rules">
+                    {passwordRules.map((rule) => (
+                      <span
+                        key={rule.label}
+                        className={`rule ${rule.passed ? 'pass' : 'fail'}`}
+                      >
+                        {rule.passed ? '✓' : '✗'} {rule.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* 确认密码输入框 */}

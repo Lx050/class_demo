@@ -2,7 +2,9 @@ package com.example.hello.controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,7 +14,7 @@ import java.util.Map;
  * 使用 HashMap 在内存中存储用户数据（仅用于课堂演示）
  *
  * API 接口列表：
- *   POST /api/auth/register  - 用户注册
+ *   POST /api/auth/register  - 用户注册（含密码强度校验）
  *   POST /api/auth/login     - 用户登录
  */
 @RestController
@@ -59,6 +61,13 @@ public class AuthController {
             return Map.of("success", false, "message", "密码不能为空");
         }
 
+        // 校验：密码强度检查
+        List<String> passwordErrors = validatePassword(password);
+        if (!passwordErrors.isEmpty()) {
+            String errorMessage = "密码不符合要求: " + String.join("; ", passwordErrors);
+            return Map.of("success", false, "message", errorMessage);
+        }
+
         // 校验：用户名是否已被注册
         if (userStore.containsKey(username)) {
             return Map.of("success", false, "message", "用户名已存在");
@@ -68,6 +77,52 @@ public class AuthController {
         userStore.put(username, password);
 
         return Map.of("success", true, "message", "注册成功！欢迎 " + username);
+    }
+
+    /**
+     * 密码强度校验方法 - Password Validation
+     *
+     * 校验规则：
+     *   1. 密码长度至少 6 位
+     *   2. 必须包含至少一个大写字母
+     *   3. 必须包含至少一个数字
+     *
+     * @param password 待校验的密码字符串
+     * @return 错误信息列表，为空表示密码合格
+     */
+    private List<String> validatePassword(String password) {
+        List<String> errors = new ArrayList<>();
+
+        // 规则1：检查密码长度
+        if (password.length() < 6) {
+            errors.add("长度至少6位");
+        }
+
+        // 规则2：检查是否包含大写字母
+        boolean hasUpperCase = false;
+        for (char c : password.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                hasUpperCase = true;
+                break;
+            }
+        }
+        if (!hasUpperCase) {
+            errors.add("需包含至少一个大写字母");
+        }
+
+        // 规则3：检查是否包含数字
+        boolean hasDigit = false;
+        for (char c : password.toCharArray()) {
+            if (Character.isDigit(c)) {
+                hasDigit = true;
+                break;
+            }
+        }
+        if (!hasDigit) {
+            errors.add("需包含至少一个数字");
+        }
+
+        return errors;
     }
 
     /**
