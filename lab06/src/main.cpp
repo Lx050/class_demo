@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <WiFiManager.h> // 引入 WiFiManager 库
+#include <WiFiManager.h>
 
 // ==========================================
 // 1. OpenClaw 配置 (云服务器公网 IP)
@@ -24,29 +24,46 @@ const unsigned long cooldownTime = 5000; // 5秒内不重复触发
 
 void sendToOpenClaw(int val) {
     if (WiFi.status() == WL_CONNECTED) {
+        Serial.println(">>> Preparing HTTP request...");
         HTTPClient http;
         http.begin(openclawUrl);
         http.addHeader("Content-Type", "application/json");
         http.addHeader("Authorization", String("Bearer ") + token);
 
+        // 构建符合 OpenClaw 格式的 JSON
         String jsonPayload = "{";
-        jsonPayload += "\"text\": \"🚨 警报：您的 ESP32 触摸传感器被触发！数值: " + String(val) + "\",";
-        jsonPayload += "\"sessionKey\": \"hook:esp32-dynamic-wifi\",";
+        jsonPayload += "\"text\": \"🚨 ESP32 触摸报警！监测值: " + String(val) + "\",";
+        jsonPayload += "\"sessionKey\": \"hook:esp32-debug\",";
         jsonPayload += "\"metadata\": { \"device\": \"ESP32-D0WD\", \"sensor\": \"touch\", \"val\": " + String(val) + " }";
         jsonPayload += "}";
 
-        Serial.println("Pushing to OpenClaw...");
+        Serial.println(">>> Sending POST to: " + openclawUrl);
         int httpResponseCode = http.POST(jsonPayload);
 
         if (httpResponseCode > 0) {
             String response = http.getString();
-            Serial.printf("HTTP %d Success!\n", httpResponseCode);
-            digitalWrite(LED_PIN, HIGH); delay(100); digitalWrite(LED_PIN, LOW); delay(100);
-            digitalWrite(LED_PIN, HIGH); delay(100); digitalWrite(LED_PIN, LOW);
+            Serial.printf(">>> HTTP Status: %d\n", httpResponseCode);
+            Serial.println(">>> Server Response: " + response);
+            
+            if (httpResponseCode == 200 || httpResponseCode == 201) {
+                // 成功：快闪三次
+                for(int i=0; i<3; i++) {
+                    digitalWrite(LED_PIN, HIGH); delay(100);
+                    digitalWrite(LED_PIN, LOW); delay(100);
+                }
+            } else {
+                // 失败：长亮 1 秒提示
+                digitalWrite(LED_PIN, HIGH); delay(1000);
+                digitalWrite(LED_PIN, LOW);
+                Serial.println(">>> Tip: Check if the Token or Mapping is correct in OpenClaw.");
+            }
         } else {
-            Serial.printf("HTTP Error: %s\n", http.errorToString(httpResponseCode).c_str());
+            Serial.printf(">>> HTTP Failed! Error: %s\n", http.errorToString(httpResponseCode).c_str());
+            Serial.println(">>> Tip: Check Firewall or Port forwarding on Cloud Server.");
         }
         http.end();
+    } else {
+        Serial.println(">>> Error: WiFi NOT connected!");
     }
 }
 
@@ -55,18 +72,13 @@ void setup() {
     pinMode(LED_PIN, OUTPUT);
     digitalWrite(LED_PIN, LOW);
 
-    Serial.println("\n--- Lab06: Dynamic WiFi Bridge ---");
+    Serial.println("\n--- Lab06: OpenClaw Bridge (DEBUG MODE) ---");
 
-    // ==========================================
-    // 3. 使用 WiFiManager 替代硬编码 WiFi
-    // ==========================================
     WiFiManager wm;
+    // wm.resetSettings(); // 如果已经连上了，可以注释掉这行来加快启动过程
 
-    // 如果 180 秒内没有连接上 WiFi，则重置 ESP32
     wm.setConfigPortalTimeout(180);
 
-    // 尝试连接之前的 WiFi，如果失败，则启动一个 AP
-    // AP 名称为 "ESP32-Lab06-Config"
     if (!wm.autoConnect("ESP32-Lab06-Config")) {
         Serial.println("Failed to connect or hit timeout");
         ESP.restart();
@@ -85,9 +97,8 @@ void loop() {
     int touchValue = touchRead(TOUCH_PIN);
     
     if (touchValue < THRESHOLD && (millis() - lastTriggerTime > cooldownTime)) {
-        Serial.printf("Touch detected! (Value: %d)\n", touchValue);
+        Serial.printf("\n--- Touch Triggered! Value: %d ---\n", touchValue);
         lastTriggerTime = millis();
-        
         digitalWrite(LED_PIN, HIGH);
         sendToOpenClaw(touchValue);
         digitalWrite(LED_PIN, LOW);
