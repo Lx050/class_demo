@@ -5,8 +5,8 @@
 // ==========================================
 // 1. 基础联网配置 (请修改)
 // ==========================================
-const char* ssid = "iQOO Neo9";         // 您的 WiFi 名称
-const char* password = "147258369"; // 您的 WiFi 密码
+const char* ssid = "YOUR_WIFI_SSID";         // 您的 WiFi 名称
+const char* password = "YOUR_WIFI_PASSWORD"; // 您的 WiFi 密码
 
 // ==========================================
 // 2. OpenClaw 配置 (请根据您的电脑 IP 修改)
@@ -17,7 +17,7 @@ const String openclawIP = "115.190.2.253";
 const String openclawUrl = "http://" + openclawIP + ":18789/hooks/esp32";
 
 // 在 openclaw.json 中设置的用于验证的 Token
-const char* token = "lx050-secret-123"; 
+const char* token = "6638cdf0eb815b0defec637d0d1ee120d03ea99cc471415d5eb612f0640a6303"; 
 
 // ==========================================
 // 3. 硬件与阈值配置
