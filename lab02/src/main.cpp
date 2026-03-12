@@ -1,42 +1,12 @@
 #include <Arduino.h>
-#include <WiFi.h>
 
 // ============================================================
 // 实验2: 基础IO实验 - LED闪烁控制
-// 功能：LED基础闪烁 + SOS求救信号 + WiFi连接
+// 功能：LED基础闪烁 + SOS求救信号
 // ============================================================
 
 // 定义LED引脚，ESP32板载LED连接在 GPIO2
 #define LED_PIN 2
-
-// WiFi 配置
-const char* WIFI_SSID = "iQOO Neo9";
-const char* WIFI_PASSWORD = "147258369";
-
-// WiFi 连接函数
-void connectWiFi() {
-    Serial.print("正在连接 WiFi: ");
-    Serial.println(WIFI_SSID);
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-
-    int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 30) {
-        delay(500);
-        Serial.print(".");
-        attempts++;
-    }
-
-    if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("\nWiFi 连接成功！");
-        Serial.print("IP 地址: ");
-        Serial.println(WiFi.localIP());
-        Serial.print("信号强度 (RSSI): ");
-        Serial.print(WiFi.RSSI());
-        Serial.println(" dBm");
-    } else {
-        Serial.println("\nWiFi 连接失败！");
-    }
-}
 
 // SOS 求救信号（摩尔斯电码：三短、三长、三短）
 void playSOS() {
@@ -88,10 +58,6 @@ void setup() {
     Serial.println("================================");
     Serial.println("实验2: 基础IO实验 - LED闪烁控制");
     Serial.println("================================");
-
-    // 启动时自动连接 WiFi
-    connectWiFi();
-
     Serial.println("\n开始 LED 闪烁...");
     Serial.println("基础闪烁 5 次后进入 SOS 模式\n");
 }
