@@ -13,7 +13,7 @@ const char* password = "147258369"; // 您的 WiFi 密码
 // ==========================================
 // 注意：必须填写您电脑的【局域网 IP】，例如 "192.168.1.100"
 // 您可以在电脑命令行输入 `ipconfig` 查看 IPv4 地址
-const String openclawIP = "10.51.212.52"; 
+const String openclawIP = "115.190.2.253"; 
 const String openclawUrl = "http://" + openclawIP + ":18789/hooks/esp32";
 
 // 在 openclaw.json 中设置的用于验证的 Token
