@@ -7,6 +7,7 @@
 
 // 定义LED引脚，ESP32板载LED连接在 GPIO2
 #define LED_PIN 2
+#define LED_R 18
 
 // SOS 求救信号（摩尔斯电码：三短、三长、三短）
 void playSOS() {
